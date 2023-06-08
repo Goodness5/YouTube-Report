@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YouTube Data Report</title>
+</head>
+<body>
+    <h1>YouTube Data Report</h1>
+    {% if pdf_path %}
+        <p>Report generated successfully!</p>
+        <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+        <p><a href="{{ pdf_path }}" download>Download Report</a></p>
+    {% else %}
+        <p>An error occurred while generating the report.</p>
+        <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+    {% endif %}
+</body>
+</html>

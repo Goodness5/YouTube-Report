@@ -1,3 +1,4 @@
+
 #!/usr/bin/python3
 import math
 import os
@@ -6,6 +7,7 @@ import subprocess
 import sys
 from io import BytesIO
 from shutil import which
+import zipfile
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -21,17 +23,39 @@ from wordcloud import WordCloud
 
 from parse import HTML
 
-image_dir = os.path.join(os.getcwd(),"Images/")
-logo = os.path.join(image_dir,"LOGO.png")
+# Define the path to the uploaded ZIP file
+uploaded_zip_path = "takeout.zip"
+
+# Extract the uploaded ZIP file
+with zipfile.ZipFile(uploaded_zip_path, "r") as zip_ref:
+    zip_ref.extractall()
+
+# Check if the history folder exists
+# if not os.path.isdir("takeout/history"):
+#     raise ValueError("Could not find the 'history' folder. Please make sure the ZIP file contains the correct folder structure.")
+
+image_dir = os.path.join(os.getcwd(), "Images/")
+logo = os.path.join(image_dir, "LOGO.png")
 urls = HTML().find_links()
-if(len(urls)==0):
-    raise ValueError("Could not find any links. Please send the developer your takeout data, so the issue can be addressed")
+if (len(urls) == 0):
+    raise ValueError(
+        "Could not find any links. Please send the developer your takeout data, so the issue can be addressed")
 search_raw, search_clean = HTML().search_history()
+
+# Check if the comment history file exists
+comment_file_path = "/home/superman/Desktop/YouTube-Report/Takeout/YouTube/my-comments/my-comments.html"
+# if not os.path.isfile(comment_file_path):
+#     raise ValueError(f"Could not find the comment history file: {comment_file_path}")
 
 try:
     link, all_links = HTML().comment_history()
 except TypeError:
     link = all_links = ""
+
+# Check if the likes history file exists
+likes_file_path = "/home/superman/Desktop/YouTube-Report/Takeout/YouTube/playlists/likes.json"
+if not os.path.isfile(likes_file_path):
+    raise ValueError(f"Could not find the likes history file: {likes_file_path}")
 
 try:
     like, all_likes = HTML().like_history()
@@ -81,7 +105,7 @@ class Visualization:
                   fontweight="bold",
                   fontname="Arial")
 
-        plt.annotate("             The plot above is based on a total of %s videos you have watched"%(len(HTML().find_links())),
+        plt.annotate("             The plot above is based on a total of %s videos you have watched" % (len(HTML().find_links())),
                      (0, 0), (0, -20),
                      fontsize=20,
                      color="steelblue",
@@ -91,7 +115,7 @@ class Visualization:
                      textcoords="offset points",
                      va="top")
 
-        plt.savefig(os.path.join(image_dir,"week_heatmap.png"), dpi=400)
+        plt.savefig(os.path.join(image_dir, "week_heatmap.png"), dpi=400)
         plt.clf()
 
     def table(self):
@@ -310,9 +334,9 @@ class Visualization:
         ]
 
         stop_words = ["porn", "nigga", "pussy"] + english_stopwords
-        found=False
-        FONTS=("LinBiolinum_R","Arial","arial","DejaVuSansMono")
-        for font in FONTS:	#this should fix an error where the font couldn't be found
+        found = False
+        FONTS = ("LinBiolinum_R", "Arial", "arial", "DejaVuSansMono")
+        for font in FONTS:  # this should fix an error where the font couldn't be found
             try:
                 wordcloud = WordCloud(
                     stopwords=stop_words,
@@ -327,13 +351,13 @@ class Visualization:
             except OSError:
                 continue
             else:
-                found=True
+                found = True
                 break
         if not found:
-            raise OSError("Could not find any of these fonts: %s"%(FONTS))
+            raise OSError("Could not find any of these fonts: %s" % (FONTS))
         del FONTS
         del found
-        
+
         plt.figure()
         plt.imshow(wordcloud)
         plt.axis("off")
@@ -344,7 +368,7 @@ class Visualization:
                   fontweight="bold",
                   fontname="Comic Sans MS")
 
-        plt.annotate("   WordCloud is based on a total of %s search queries"%(str(len(search_clean))),
+        plt.annotate("   WordCloud is based on a total of %s search queries" % (str(len(search_clean))),
                      (0, 0), (-10, 10),
                      fontsize=13,
                      color="steelblue",
@@ -354,7 +378,7 @@ class Visualization:
                      textcoords="offset points",
                      va="top")
 
-        plt.savefig(os.path.join(image_dir,"word_cloud.png"), dpi=400)
+        plt.savefig(os.path.join(image_dir, "word_cloud.png"), dpi=400)
         plt.clf()
 
     def bar(self):
@@ -385,7 +409,7 @@ class Visualization:
                   color="steelblue",
                   fontweight="bold",
                   fontname="Comic Sans MS")
-        plt.savefig(os.path.join(image_dir,"bar.png"), dpi=400)
+        plt.savefig(os.path.join(image_dir, "bar.png"), dpi=400)
         plt.clf()
 
     def score(self):
@@ -405,7 +429,8 @@ class Visualization:
             1,
         )
         x_0 = [1, 0, 0, 0]
-        pl.pie([100 - score_value, score_value], autopct="%1.1f%%", startangle=90, colors=colors, pctdistance=10)
+        pl.pie([100 - score_value, score_value], autopct="%1.1f%%",
+               startangle=90, colors=colors, pctdistance=10)
         plt.pie(x_0, radius=0.7, colors="w")
         plt.axis("equal")
 
@@ -424,7 +449,7 @@ class Visualization:
                      xycoords="axes fraction",
                      textcoords="offset points",
                      va="top")
-        plt.savefig(os.path.join(image_dir,"score.png"), dpi=400)
+        plt.savefig(os.path.join(image_dir, "score.png"), dpi=400)
         plt.clf()
 
     def gen_pdf(self):
@@ -454,14 +479,20 @@ class Visualization:
         # logo
         img_doc.drawImage(logo, 99, 2068, width=105, height=80)
         # red square
-        img_doc.drawImage(path6, inch * 24.3, inch * 16.25, width=91, height=45)
-        img_doc.drawImage(path6, inch * 24.3, inch * 14.69, width=91, height=45)
-        img_doc.drawImage(path6, inch * 24.3, inch * 13.14, width=91, height=45)
-        img_doc.drawImage(path6, inch * 24.3, inch * 11.60, width=91, height=45)
+        img_doc.drawImage(path6, inch * 24.3, inch *
+                          16.25, width=91, height=45)
+        img_doc.drawImage(path6, inch * 24.3, inch *
+                          14.69, width=91, height=45)
+        img_doc.drawImage(path6, inch * 24.3, inch *
+                          13.14, width=91, height=45)
+        img_doc.drawImage(path6, inch * 24.3, inch *
+                          11.60, width=91, height=45)
 
         # draw three lines, x,y,width,height
-        img_doc.rect(0.83 * inch, 28.5 * inch, 26.0 * inch, 0.04 * inch, fill=1)
-        img_doc.rect(0.83 * inch, 18.9 * inch, 26.0 * inch, 0.04 * inch, fill=1)
+        img_doc.rect(0.83 * inch, 28.5 * inch,
+                     26.0 * inch, 0.04 * inch, fill=1)
+        img_doc.rect(0.83 * inch, 18.9 * inch,
+                     26.0 * inch, 0.04 * inch, fill=1)
         img_doc.rect(0.83 * inch, 8.5 * inch, 26.0 * inch, 0.04 * inch, fill=1)
         # title
         img_doc.setFont("Helvetica-Bold", 82)
@@ -473,7 +504,7 @@ class Visualization:
         print("First watched video: " + urls[-1])
         body_style = ParagraphStyle("Body", fontSize=31)
         items1 = []
-        link1 = "<link href=%s>PLAY</link>"%(urls[-1])
+        link1 = "<link href=%s>PLAY</link>" % (urls[-1])
         items1.append(Paragraph(link1, body_style))
         f1 = Frame(inch*24.1, inch*14.89, inch*12, inch*2)
         f1.addFromList(items1, img_doc)
@@ -486,7 +517,7 @@ class Visualization:
             )
         )
         items2 = []
-        link2 = "<link href=%s>PLAY</link>"%(max(set(urls), key=urls.count))
+        link2 = "<link href=%s>PLAY</link>" % (max(set(urls), key=urls.count))
         items2.append(Paragraph(link2, body_style))
         f2 = Frame(inch * 24.1, inch * 13.37, inch * 12, inch * 2)
         f2.addFromList(items2, img_doc)
@@ -494,7 +525,7 @@ class Visualization:
         # first like
         print("First like: " + like)
         items3 = []
-        link3 = "<link href=%s>PLAY</link>"%(like)
+        link3 = "<link href=%s>PLAY</link>" % (like)
         items3.append(Paragraph(link3, body_style))
         f3 = Frame(inch * 24.1, inch * 11.85, inch * 12, inch * 2)
         f3.addFromList(items3, img_doc)
@@ -502,23 +533,25 @@ class Visualization:
         # first comment
         print("First Commented Video: " + link)
         items4 = []
-        link4 = "<link href=%s>PLAY</link>"%(link)
+        link4 = "<link href=%s>PLAY</link>" % (link)
         items4.append(Paragraph(link4, body_style))
         f4 = Frame(inch * 24.3, inch * 10.25, inch * 12, inch * 2)
         f4.addFromList(items4, img_doc)
 
         # first search
         items5 = []
-        link5 = "<link href=''>%s</link>"%(re.sub("[^\w\s]", "", str(search_raw[-1])))
+        link5 = "<link href=''>%s</link>" % (
+            re.sub("[^\w\s]", "", str(search_raw[-1])))
         items5.append(Paragraph(link5, body_style))
         f5 = Frame(inch * 23.7, inch * 8.73, inch * 12, inch * 2)
         f5.addFromList(items5, img_doc)
 
         img_doc.save()
         pdf.addPage(PdfFileReader(BytesIO(img_temp.getvalue())).getPage(0))
-        with open("YouTube_Report.pdf","wb") as f:
-        	pdf.write(f)
-        print("Congratulations! You have successfully created your personal YouTube report!")
+        with open("YouTube_Report.pdf", "wb") as f:
+            pdf.write(f)
+        print(
+            "Congratulations! You have successfully created your personal YouTube report!")
         if sys.platform == "win32":
             os.startfile("YouTube_Report.pdf")
         elif sys.platform == "win64":
@@ -529,6 +562,7 @@ class Visualization:
             subprocess.call(["xdg-open", "YouTube_Report.pdf"])
         else:
             print("No opener found for your platform. Just open YouTube_Report.pdf.")
+
 
 if __name__ == "__main__":
     visual = Visualization()

@@ -2,50 +2,51 @@
 import re
 import os
 import json
-import datetime,pytz
+import datetime
+import pytz
 import collections
 import itertools
 
-missing=[]
-dir = os.path.join(os.getcwd(),"Takeout/YouTube/")
+missing = []
+dir = os.path.join(os.getcwd(), "Takeout/YouTube/")
 if not os.path.exists(dir):
-	missing.append(dir)
-found=False
-for path in ("Verlauf/Wiedergabeverlauf.html","history/watch-history.html"):	
-	watch_history = os.path.join(dir,path)
-	if os.path.exists(watch_history):
-		found=True
-		break
+    missing.append(dir)
+found = False
+for path in ("Verlauf/Wiedergabeverlauf.html", "history/watch-history.html"):
+    watch_history = os.path.join(dir, path)
+    if os.path.exists(watch_history):
+        found = True
+        break
 if not found:
-	missing.append(watch_history)
-found=False
-for path in ("Verlauf/Suchverlauf.html","history/search-history.html"):	
-	search_history = os.path.join(dir,path)
-	if os.path.exists(search_history):
-		found=True
-		break
+    missing.append(watch_history)
+found = False
+for path in ("Verlauf/Suchverlauf.html", "history/search-history.html"):
+    search_history = os.path.join(dir, path)
+    if os.path.exists(search_history):
+        found = True
+        break
 if not found:
-	missing.append(search_history)
-found=False
-for path in ("Meine Kommentare/Meine Kommentare.html","my-comments/my-comments.html"):	
-	comments_history = os.path.join(dir,path)
-	if os.path.exists(comments_history):
-		found=True
-		break
+    missing.append(search_history)
+found = False
+for path in ("Meine Kommentare/Meine Kommentare.html", "my-comments/my-comments.html"):
+    comments_history = os.path.join(dir, path)
+    if os.path.exists(comments_history):
+        found = True
+        break
 if not found:
-	missing.append(comments_history)
-found=False
-for path in ("Playlists/Positive Bewertungen.json","playlists/likes.json"):	
-	like_history = os.path.join(dir,path)
-	if os.path.exists(like_history):
-		found=True
-		break
+    missing.append(comments_history)
+found = False
+for path in ("Playlists/Positive Bewertungen.json", "playlists/likes.json"):
+    like_history = os.path.join(dir, path)
+    if os.path.exists(like_history):
+        found = True
+        break
 if not found:
-	missing.append(like_history)
+    missing.append(like_history)
 del found
 
-if len(missing)>0:
-	raise OSError("Required directories do not exist: %s"%(missing))
+# if len(missing) > 0:
+#     raise OSError("Required directories do not exist: %s" % (missing))
 del missing
 
 
@@ -58,36 +59,38 @@ class HTML:
         with open(comments_history, "r", encoding="utf-8") as f:
             html_comment = f.read()
     except Exception:
-       print("Could not parse comments.")
+        print("Could not parse comments.")
 
     def find_links(self):
         # search all links based on your personal html file
         links = []
-        #if you want to understand ↓these↓, go to regex101.com.
-        #also, I just assumed that the previously written english regex was faulty too, but replace that one if needed. I've only got the german one on hand.
-        for translation in (r"""Watched\xa0<a href=\"([^\"]*)\">[^<]*<\/a>""",r"""<a href=\"([^\"]*)\">[^<]*<\/a>\xa0angesehen"""):
-            links+=self.raw_find_links(translation)
+        # if you want to understand ↓these↓, go to regex101.com.
+        # also, I just assumed that the previously written english regex was faulty too, but replace that one if needed. I've only got the german one on hand.
+        for translation in (r"""Watched\xa0<a href=\"([^\"]*)\">[^<]*<\/a>""", r"""<a href=\"([^\"]*)\">[^<]*<\/a>\xa0angesehen"""):
+            links += self.raw_find_links(translation)
         return links
-    def raw_find_links(self,translation):
+
+    def raw_find_links(self, translation):
         pattern = re.compile(translation)
         matchList = pattern.findall(str(self.html_watch))
 
         # save links into list
-        return [match for match in matchList if type(match)==str]	#just sorting out stuff that could f up the whole script
-
+        # just sorting out stuff that could f up the whole script
+        return [match for match in matchList if type(match) == str]
 
     def find_times(self):
         times = []
-        for translation in ((r"""<\/a><br><a href=\"[^\"]*\">[^<]*<\/a><br>(\D*) (\d\d?), (\d\d\d\d), (\d\d?):(\d\d?):(\d\d?) (AM|PM) ([^<]*)<\/div>""","%s %s, %s, %s:%s:%s %s","%b %d, %Y, %I:%M:%S %p"),(r"""\xa0angesehen<br><a href=\"[^\"]*\">[^<]*<\/a><br>(\d\d?)\.(\d\d?)\.(\d\d\d\d), (\d\d?):(\d\d?):(\d\d?) ([^<]*)<\/div>""","%s.%s.%s %s:%s:%s","%d.%m.%Y %H:%M:%S")):
-        	times+=self.raw_find_times(*translation)
+        for translation in ((r"""<\/a><br><a href=\"[^\"]*\">[^<]*<\/a><br>(\D*) (\d\d?), (\d\d\d\d), (\d\d?):(\d\d?):(\d\d?) (AM|PM) ([^<]*)<\/div>""", "%s %s, %s, %s:%s:%s %s", "%b %d, %Y, %I:%M:%S %p"), (r"""\xa0angesehen<br><a href=\"[^\"]*\">[^<]*<\/a><br>(\d\d?)\.(\d\d?)\.(\d\d\d\d), (\d\d?):(\d\d?):(\d\d?) ([^<]*)<\/div>""", "%s.%s.%s %s:%s:%s", "%d.%m.%Y %H:%M:%S")):
+            times += self.raw_find_times(*translation)
         return times
-        
-    def raw_find_times(self,regex,timegex,timegex2):
+
+    def raw_find_times(self, regex, timegex, timegex2):
         pattern = re.compile(regex)
         matchList = pattern.findall(str(self.html_watch))
-        times=[]
+        times = []
         for time in matchList:
-            times.append(pytz.timezone(time[-1]).localize(datetime.datetime.strptime(timegex%(time[:-1]),timegex2)))
+            times.append(pytz.timezone(
+                time[-1]).localize(datetime.datetime.strptime(timegex % (time[:-1]), timegex2)))
         return times
 
     def _find_times(self):
@@ -139,17 +142,12 @@ class HTML:
             link = r"https://www.youtube.com/watch?v=" + match_list[-1][11:]
             return link, match_list
 
-
-
     def dataframe_heatmap(self, day):
         times = self.find_times()
-        watchtimes=[0 for t in range(12)]
-        
+        watchtimes = [0 for t in range(12)]
+
         for time in times:
-        	if time.weekday()==day:
-        		watchtimes[(time.hour//2)-time.hour%2]+=1
+            if time.weekday() == day:
+                watchtimes[(time.hour//2)-time.hour % 2] += 1
 
         return watchtimes
-
-
-
