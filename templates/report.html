@@ -2,13 +2,72 @@
 <html>
 <head>
     <title>YouTube Data Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .chart-container img {
+            margin: 10px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 5px #ccc;
+        }
+
+        .download-link {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            background-color: rgb(161, 162, 243);
+            padding: 1em;
+            border-radius: 1em;
+            display: flex;
+            flex-direction: row;
+            width: 7em;
+        }
+        .download-link:hover{
+            background-color: rgb(128, 130, 249);
+            padding: 1.1em;
+        }
+        a{
+            text-decoration: none;
+            color: white;
+            font-family: fantasy;
+        }
+        .utils{
+            justify-content: space-between;
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 4em;
+        }
+    </style>
 </head>
 <body>
     <h1>YouTube Data Report</h1>
     {% if pdf_path %}
-        <p>Report generated successfully!</p>
-        <p><a href="{{ url_for('index') }}">Back to Home</a></p>
-        <p><a href="{{ pdf_path }}" download>Download Report</a></p>
+        <div class="chart-container">
+            <img src="{{ heatmap_image_path }}" alt="Heatmap">
+            <img src="{{ wordcloud_image_path }}" alt="Word Cloud">
+            <img src="{{ bar_chart_image_path }}" alt="Bar Chart">
+            <img src="{{ pie_chart_image_path }}" alt="Pie Chart">
+            <img src="{{ radar_chart_image_path }}" alt="Radar Chart">
+        </div>
+        <div class="utils">
+            <p class="download-link"><a href="{{ url_for('index') }}">Back to Home</a></p>
+            <div class="download-link">
+                <a href="{{ pdf_path }}" download="youtube_report.pdf">Download PDF Report</a>
+            </div>
+    </div>
     {% else %}
         <p>An error occurred while generating the report.</p>
         <p><a href="{{ url_for('index') }}">Back to Home</a></p>

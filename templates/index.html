@@ -2,51 +2,81 @@
 <html>
   <head>
     <title>YouTube Report Generator</title>
-    <script>
-      function handleCredentialResponse(response) {
-        console.log("called")
-        var responsePayload = response.credential;
-        console.log("response is", responsePayload);
-        // Send the responsePayload to your server for further validation and to generate the report
-        fetch('/process', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(responsePayload),
-        })
-          .then(function (response) {
-            if (response.ok) {
-              return response.blob();
-            } else {
-              throw new Error('Failed to generate the report');
-            }
-          })
-          .then(function (blob) {
-            // Create a temporary URL to download the report
-            var url = URL.createObjectURL(blob);
-            // Create a temporary link element
-            var link = document.createElement('a');
-            link.href = url;
-            link.download = 'report.pdf';
-            link.click();
-          })
-          .catch(function (error) {
-            console.error(error);
-            alert('Failed to generate the report. Please try again.');
-          });
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f7f7f7;
+        padding: 20px;
       }
-    </script>
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .btn {
+        background-color: #ff5722;
+        color: #ffffff;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-bottom: 10px;
+      }
+
+      .btn:hover {
+        background-color: #f4511e;
+      }
+
+      .form-label {
+        font-weight: bold;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+      }
+
+      .form-submit {
+        background-color: #4caf50;
+        color: #ffffff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .form-submit:hover {
+        background-color: #45a049;
+      }
+    </style>
   </head>
   <body>
     <h1>YouTube Report Generator</h1>
-    <div id="g_id_onload"
-         data-client_id="147591993572-ogbg3b7d2h4271efsoqgah8bc8j6jrg0.apps.googleusercontent.com"
-         data-callback="handleCredentialResponse">
+    <div class="container">
+      <div id="g_id_onload"
+           data-client_id="147591993572-ogbg3b7d2h4271efsoqgah8bc8j6jrg0.apps.googleusercontent.com"
+           data-callback="handleCredentialResponse">
+      </div>
+      <a href='/signin'>
+        <button class="btn">Generate Report with your account</button>
+      </a>
+      <form action="/process" method="post" enctype="multipart/form-data">
+        <label class="form-label">Upload your YouTube Takeout file:</label>
+        <input type="file" name="file" class="form-input" accept="">
+        <input type="submit" value="Generate Report" class="form-submit">
+      </form>
     </div>
-    <a href='/signin' >signin </a>
-    <button onclick="google.accounts.id.prompt()">Sign in with Google</button>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script> 
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </body>
 </html>

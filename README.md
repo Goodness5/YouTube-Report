@@ -1,54 +1,90 @@
-# Generate Your Personal YouTube Report
-<img src="https://i.ibb.co/H255wkD/You-Tube-Report-1.png" alt="avatar" width="571" height="656">
+Sure! Here's a sample README file content that you can use as a starting point for setting up the project on your PC:
+
+---
+
+# YouTube Data Report
+
+This project generates a data report for YouTube videos using Flask and various data visualization techniques.
+
+## Prerequisites
+
+- Python 3.7 or above
+- pip package manager
 
 ## Getting Started
 
-### 1. Install Python 3+
+1. Clone the repository:
 
-If you don't already have Python 3+ installed on your computer, download it from https://www.python.org/downloads/. 
+   ```bash
+   git clone <repository_url>
+   ```
 
-### 2. Get Your YouTube Data
+2. Navigate to the project directory:
 
-Here you can find out how to download your Google data: https://support.google.com/accounts/answer/3024190?hl=en
-Here you can download all of the data that Google has stored on you: https://takeout.google.com/
+   ```bash
+   cd YouTube-Data-Report
+   ```
 
-To use this script, you only need to select and download "YouTube", which Google will provide to you as a Zip file by default.
+3. Create a virtual environment (optional but recommended):
 
-<img src="https://i.ibb.co/Wk1LZ7N/Screenshot-4.png" alt="avatar" style="zoom: 200%;" />
+   ```bash
+   python -m venv env
+   ```
 
-### 3. Clone This Repository
+4. Activate the virtual environment:
 
-On https://github.com/A3M4/Personal-YouTube-Report-Generator, click the green "Clone or Download" button at the top right of the page. Then, click the "Download ZIP" button, and extract the ZIP somewhere on your computer.
+   - For Windows:
 
-NOTE: Make sure to set your [Google Account language ](https://support.google.com/accounts/answer/32047)to English before downloading
+     ```bash
+     env\Scripts\activate
+     ```
 
-### 4. Extract the Takeout File
+   - For macOS/Linux:
 
-Extract the Takeout File(from step 2) and move it to the repository folder(from step 3). Now the files in Repository folder look like below.
+     ```bash
+     source env/bin/activate
+     ```
 
+5. Install the dependencies:
 
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-<img src="https://i.ibb.co/R4D5yHn/Screenshot-2.png" alt="avatar" style="zoom: 200%;" />
+6. Set up the necessary environment variables:
 
-### 5. Install Dependencies
+   - Rename the `.env.example` file to `.env`:
 
-Open [command prompt or Terminal window](https://tutorial.djangogirls.org/en/intro_to_command_line/#what-is-the-command-line) in this repository folder, type the following and press enter:
+     ```bash
+     mv .env.example .env
+     ```
 
-```
-pip install -r requirements.txt
-```
+   - Open the `.env` file and modify the values according to your setup.
 
-### 6. Run the Script
+7. Start the Flask development server:
 
-In the same command prompt or Terminal window, type the following and press enter:
+   ```bash
+   python3 app.py
+   ```
 
-```
-python report.py
-```
+8. Open your web browser and navigate to `http://localhost:5000` to access the application.
 
-### 7. Results
+## Usage
 
-The script will generate a file named **YouTube_Report.pdf**. This file will automatically open in your browser once the script completes. Besides, you can find all the images that make up this report in **Images** folder.
+1. Enter the YouTube video URL in the input field.
+2. Click the "Generate Report" button.
+3. Wait for the report generation process to complete.
+4. The generated report will include visualizations such as word cloud, bar chart, pie chart, heatmap, and radar chart.
+5. You can view the generated report on the web page and download it as a PDF.
 
+## Contributing
 
+Contributions are welcome! If you find any issues or want to enhance the project, feel free to open a pull request.
 
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+Feel free to modify the above content according to your specific project structure and requirements. Make sure to include any additional instructions or information that may be necessary for setting up and running the project successfully.
